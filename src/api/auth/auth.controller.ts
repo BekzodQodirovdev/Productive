@@ -5,11 +5,21 @@ import { Response } from 'express';
 import { VerifyDto } from './dto/verify.dto';
 import { setdOtpDdto } from './dto/sendotp.dto';
 import { UserID } from 'src/common/decorator/user-id.decorator';
-
+import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorator/public.decorator';
+import { CreateAuthDto } from './dto/create-auth.dto';
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
+  @Post('register')
+  register(@Body() registerUserDto: CreateAuthDto) {
+    return this.authService.register(registerUserDto);
+  }
+
+  @Public()
   @Post('login')
   login(
     @Body() loginUserDto: LoginUserDto,
@@ -17,11 +27,14 @@ export class AuthController {
   ) {
     return this.authService.login(loginUserDto, res);
   }
+
+  @Public()
   @Post('verify')
   verify(@Body() data: VerifyDto) {
     return this.authService.verify(data);
   }
 
+  @Public()
   @Post('send-otp')
   sendOtp(@Body() data: setdOtpDdto) {
     return this.authService.sendOtp(data.email);

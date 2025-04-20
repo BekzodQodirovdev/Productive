@@ -52,13 +52,14 @@ export class AuthService {
     await this.otpRepository.save(otp_code);
     this.emailService.otpSend(saveData.email, otp_code_g);
 
-    return { status_code: 200, message: 'Success', data: saveData };
+    return { status_code: 201, message: 'Success', data: saveData };
   }
 
   async login(dto: LoginUserDto, res: Response) {
     const currentData = await this.repository.findOne({
       where: { email: dto.email },
     });
+
     if (!currentData) {
       throw new BadRequestException('Email or Password is wrong');
     }
@@ -71,6 +72,10 @@ export class AuthService {
     }
     if (!currentData.is_active) {
       throw new ForbiddenException(`You are not active.`);
+    }
+    const network = dto.network ?? 'email';
+    if (currentData.network != network) {
+      throw new ForbiddenException(`You are logged in from another network.`);
     }
     const payload: IPayload = {
       sub: currentData.id,
@@ -85,12 +90,12 @@ export class AuthService {
       secret: config.JWT_SECRET,
       expiresIn: config.REFRESH_TOKEN_TIME,
     });
-    const { password, ...store } = currentData;
+    const { password, ...data } = currentData;
     this.writeToCookie(refreshToken, res);
     return {
       accessToken,
       refreshToken,
-      store,
+      data,
     };
   }
 
@@ -121,6 +126,7 @@ export class AuthService {
       throw new BadRequestException('You are already active');
     }
     await this.repository.update(user.id, { is_active: true });
+    await this.otpRepository.delete(otp_data.id);
     return {
       status_code: 202,
       message: 'Success activated',

@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { AuthGuard } from 'src/common/guard/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -30,7 +31,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
       transport: {
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
-        secure: false,
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASSWORD,
@@ -48,6 +48,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
     },
   ],
 })
