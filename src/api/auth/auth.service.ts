@@ -10,7 +10,6 @@ import { User } from 'src/core/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BcryptManage } from 'src/infrastructure/lib/bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { generate } from 'otp-generator';
 import { OtpRepository } from 'src/core/repository/otp.repository';
 import { Otp } from 'src/core/entity/otp.entity';
 import { EmailService } from '../email/email.service';
@@ -19,6 +18,7 @@ import { config } from 'src/config';
 import { Response } from 'express';
 import { LoginUserDto } from './dto/login-auth.dto';
 import { VerifyDto } from './dto/verify.dto';
+import { OtpGenerator } from 'src/infrastructure/lib/otp';
 
 @Injectable()
 export class AuthService {
@@ -39,10 +39,7 @@ export class AuthService {
     const userData = this.repository.create(dto);
 
     const { password, ...saveData } = await this.repository.save(userData);
-    const otp_code_g = generate(6, {
-      upperCaseAlphabets: false,
-      specialChars: false,
-    });
+    const otp_code_g = OtpGenerator();
     const otp_code = this.otpRepository.create({
       otp_code: otp_code_g,
       email: saveData.email,
@@ -126,7 +123,7 @@ export class AuthService {
       throw new BadRequestException('You are already active');
     }
     await this.repository.update(user.id, { is_active: true });
-    await this.otpRepository.delete(otp_data.id);
+    // await this.otpRepository.delete(otp_data.id);
     return {
       status_code: 202,
       message: 'Success activated',
@@ -152,10 +149,7 @@ export class AuthService {
     if (now < currentOtp.otp_time) {
       throw new BadRequestException('Otp haliham ishlamoqda');
     }
-    const otp_codeG = generate(6, {
-      upperCaseAlphabets: false,
-      specialChars: false,
-    });
+    const otp_codeG = OtpGenerator();
     const otp = {
       ...currentOtp,
       otp_code: otp_codeG,
