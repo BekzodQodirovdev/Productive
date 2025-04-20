@@ -2,9 +2,9 @@
   "name": "Productive",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "https://github.com/BekzodQodirovdev",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "ISC",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -19,6 +19,12 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "keywords": [
+    "Erp-system",
+    "nodejs",
+    "js",
+    "Holo"
+  ],
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^11.0.1",
