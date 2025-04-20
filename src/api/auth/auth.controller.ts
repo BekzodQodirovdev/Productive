@@ -1,16 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginUserDto } from './dto/login-auth.dto';
 import { Response } from 'express';
 import { VerifyDto } from './dto/verify.dto';
@@ -40,6 +29,6 @@ export class AuthController {
 
   @Get('profile')
   profile(@UserID() id: string) {
-    return this.authService.profile(id)
+    return this.authService.profile(id);
   }
 }

@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UserRepository } from 'src/core/repository/user.repository';
 import { User } from 'src/core/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';

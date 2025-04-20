@@ -7,7 +7,7 @@ import {
 
 export function IsPhoneNumber(validationOptions?: ValidationOptions) {
   try {
-    return function (object: Object, propertyName: string) {
+    return function (object: object, propertyName: string) {
       registerDecorator({
         name: 'isPhoneNumber',
         target: object.constructor,

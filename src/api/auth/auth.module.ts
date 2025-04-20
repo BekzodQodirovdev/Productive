@@ -10,7 +10,7 @@ import { Otp } from 'src/core/entity/otp.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User,Otp]),
+    TypeOrmModule.forFeature([User, Otp]),
     JwtModule.register({ global: true }),
     JwtModule.register({
       global: true,
