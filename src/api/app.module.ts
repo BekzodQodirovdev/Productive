@@ -3,6 +3,9 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'src/config';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -23,6 +26,22 @@ import { APP_GUARD } from '@nestjs/core';
       synchronize: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: false,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      },
+      defaults: {
+        from: process.env.SMTP_USER,
+      },
+    }),
+    AuthModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [

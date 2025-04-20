@@ -12,6 +12,7 @@ export type ConfigType = {
   ACCESS_TOKEN_TIME: string;
   REFRESH_TOKEN_KEY: string;
   REFRESH_TOKEN_TIME: string;
+  JWT_SECRET: string;
 };
 
 export const config: ConfigType = {
@@ -25,4 +26,5 @@ export const config: ConfigType = {
   ACCESS_TOKEN_TIME: process.env.ACCESS_TOKEN_TIME as string,
   REFRESH_TOKEN_KEY: process.env.REFRESH_TOKEN_KEY as string,
   REFRESH_TOKEN_TIME: process.env.REFRESH_TOKEN_TIME as string,
+  JWT_SECRET: process.env.JWT_SECRET as string,
 };

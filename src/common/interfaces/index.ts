@@ -1,15 +1,7 @@
-import { AdminRoles } from '../enum';
-
 export interface IPayload {
   sub: string;
-  login: string;
+  email: string;
   is_active: boolean;
-}
-
-export interface IAdminPayload {
-  sub: string;
-  username: string;
-  role: AdminRoles;
 }
 
 export class TokenResponse {
