@@ -25,6 +25,7 @@ import { AuthGuard } from 'src/common/guard/jwt-auth.guard';
       database: config.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      dropSchema: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
     }),
     MailerModule.forRoot({
