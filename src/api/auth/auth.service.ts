@@ -19,6 +19,9 @@ import { Response } from 'express';
 import { LoginUserDto } from './dto/login-auth.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { OtpGenerator } from 'src/infrastructure/lib/otp';
+import { setdOtpDdto } from './dto/sendotp.dto';
+import { UpdatePasswordDto } from './dto/update-password';
+import { VerifyType } from 'src/common/type/otp.type';
 
 @Injectable()
 export class AuthService {
@@ -37,12 +40,15 @@ export class AuthService {
     dto.password = newPassword;
 
     const userData = this.repository.create(dto);
-
+    // if (userData?.network != 'email') {
+    //   userData.is_active = true;
+    // }
     const { password, ...saveData } = await this.repository.save(userData);
     const otp_code_g = OtpGenerator();
     const otp_code = this.otpRepository.create({
       otp_code: otp_code_g,
       email: saveData.email,
+      type: VerifyType.REGISTER,
       otp_time: new Date(Date.now() + 30 * 1000),
     });
 
@@ -80,11 +86,11 @@ export class AuthService {
       is_active: currentData.is_active,
     };
     const accessToken = this.jwtService.sign(payload, {
-      secret: config.JWT_SECRET,
+      secret: config.ACCESS_TOKEN_KEY,
       expiresIn: config.ACCESS_TOKEN_TIME,
     });
     const refreshToken = this.jwtService.sign(payload, {
-      secret: config.JWT_SECRET,
+      secret: config.REFRESH_TOKEN_KEY,
       expiresIn: config.REFRESH_TOKEN_TIME,
     });
     const { password, ...data } = currentData;
@@ -98,7 +104,7 @@ export class AuthService {
 
   private async writeToCookie(refresh_token: string, res: Response) {
     try {
-      res.cookie('refresh_token', refresh_token, {
+      res.cookie('refreshToken', refresh_token, {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
@@ -108,38 +114,70 @@ export class AuthService {
   }
 
   async verify(data: VerifyDto) {
-    const otp_data = await this.otpRepository.findOne({
-      where: { email: data.email },
-    });
-    const user = await this.repository.findOne({
-      where: { email: data.email },
-    });
-    if (!otp_data || !user) {
-      throw new NotFoundException('You are not registered yet!');
-    } else if (otp_data.otp_code != data.otp_code) {
-      throw new BadRequestException('OTP code error!!!');
+    if (data.type == 'register') {
+      const otp_data = await this.otpRepository.findOne({
+        where: { email: data.email },
+      });
+      const user = await this.repository.findOne({
+        where: { email: data.email },
+      });
+      if (!otp_data || !user) {
+        throw new NotFoundException('You are not registered yet!');
+      } else if (
+        otp_data.otp_code != data.otp_code ||
+        otp_data.type != data.type
+      ) {
+        throw new BadRequestException('OTP code error!!!');
+      }
+      if (user?.is_active) {
+        throw new BadRequestException('You are already active');
+      }
+      await this.repository.update(user.id, { is_active: true });
+      return {
+        status_code: 202,
+        message: 'Success activated',
+        data: {},
+      };
+    } else if (data.type == 'forgot_password') {
+      const otp_data = await this.otpRepository.findOne({
+        where: { email: data.email },
+      });
+      if (!otp_data) {
+        throw new NotFoundException('OTP not found for this email!');
+      } else if (
+        otp_data.otp_code != data.otp_code ||
+        otp_data.type != data.type
+      ) {
+        throw new BadRequestException('OTP code error!!!');
+      }
+      const token = this.jwtService.sign(
+        { email: data.email, type: 'forgot_password', sub: otp_data.id },
+        {
+          secret: config.JWT_SECRET,
+          expiresIn: '1h',
+        },
+      );
+
+      return {
+        status_code: 202,
+        message: 'OTP verified for password reset',
+        data: { token },
+      };
     }
-    if (user?.is_active) {
-      throw new BadRequestException('You are already active');
-    }
-    await this.repository.update(user.id, { is_active: true });
-    // await this.otpRepository.delete(otp_data.id);
-    return {
-      status_code: 202,
-      message: 'Success activated',
-      data: {},
-    };
   }
 
-  async sendOtp(email: string) {
+  async sendOtp(data: setdOtpDdto) {
+    const { email, type } = data;
     const user = await this.repository.findOne({
       where: { email },
     });
     if (!user) {
       throw new NotFoundException('You are not registered yet!');
     }
-    if (user.is_active) {
-      throw new BadRequestException('You are already active');
+    if (type == 'register') {
+      if (user.is_active) {
+        throw new BadRequestException('You are already active');
+      }
     }
     const currentOtp = await this.otpRepository.findOne({ where: { email } });
     if (!currentOtp) {
@@ -153,6 +191,7 @@ export class AuthService {
     const otp = {
       ...currentOtp,
       otp_code: otp_codeG,
+      type: type,
       otp_time: new Date(Date.now() + 30 * 1000),
     };
     await this.otpRepository.update(currentOtp.id, otp);
@@ -166,5 +205,20 @@ export class AuthService {
 
   profile(id: string) {
     return this.repository.findOne({ where: { id } });
+  }
+
+  async updatePassword(dto: UpdatePasswordDto) {
+    const { email, password } = dto;
+    const user = await this.repository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const newPassword = await this.manageBcrypt.createBcryptPassword(password);
+    await this.repository.update(user.id, { password: newPassword });
+    return {
+      status_code: 200,
+      message: 'Success',
+      data: {},
+    };
   }
 }

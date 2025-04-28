@@ -11,7 +11,7 @@ import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthUpdatePassword implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private reflector: Reflector,
@@ -40,13 +40,19 @@ export class AuthGuard implements CanActivate {
     let user: any;
     try {
       user = this.jwtService.verify(token, {
-        secret: config.ACCESS_TOKEN_KEY,
+        secret: config.JWT_SECRET,
       });
 
       req.user = user;
+      if (user.type !== 'forgot_password') {
+        throw new UnauthorizedException('Unauthorized');
+      }
     } catch (error) {
-      console.log('error', error);
-      throw new UnauthorizedException('Token expired');
+      console.log(error);
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Token expired');
+      }
+      throw new UnauthorizedException('Unauthorized');
     }
     return true;
   }

@@ -27,17 +27,11 @@ export class Application {
       .setDescription('App description here')
       .setVersion('1.0')
       .addTag('Productive')
-      .addBearerAuth(
-        {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          description: 'Input your JWT token',
-          name: 'Authorization',
-          in: 'header',
-        },
-        'access-token',
-      )
+      .addBearerAuth({
+        type: 'http',
+        scheme: 'Bearer',
+        in: 'Header',
+      })
       .build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, documentFactory);

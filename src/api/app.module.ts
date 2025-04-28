@@ -49,10 +49,6 @@ import { AuthGuard } from 'src/common/guard/jwt-auth.guard';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
   ],
 })
 export class AppModule {}
