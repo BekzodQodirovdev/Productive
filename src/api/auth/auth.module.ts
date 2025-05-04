@@ -12,9 +12,6 @@ import { Otp } from 'src/core/entity/otp.entity';
   imports: [
     TypeOrmModule.forFeature([User, Otp]),
     JwtModule.register({ global: true }),
-    JwtModule.register({
-      global: true,
-    }),
     EmailModule,
   ],
   controllers: [AuthController],

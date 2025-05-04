@@ -7,7 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { RedisModule } from 'src/common/redis/redis.module';
-// import { AuthGuard } from 'src/common/guard/jwt-auth.guard';
+import { IncomeModule } from './income/income.module';
+import { JwtGuard } from 'src/common/guard/jwt-auth.guard';
+import { EventModule } from './event/event.module';
+import { ExpenseModule } from './expense/expense.module';
 
 @Module({
   imports: [
@@ -27,7 +30,7 @@ import { RedisModule } from 'src/common/redis/redis.module';
       database: config.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      dropSchema: true,
+      // dropSchema: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
     }),
     MailerModule.forRoot({
@@ -46,12 +49,19 @@ import { RedisModule } from 'src/common/redis/redis.module';
     AuthModule,
     EmailModule,
     RedisModule,
+    IncomeModule,
+    EventModule,
+    ExpenseModule,
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
     },
   ],
 })

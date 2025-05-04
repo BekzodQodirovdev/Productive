@@ -17,7 +17,6 @@ import { UserID } from 'src/common/decorator/user-id.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/common/decorator/public.decorator';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { AuthGuard } from 'src/common/guard/jwt-auth.guard';
 import { UpdatePasswordDto } from './dto/update-password';
 import { AuthUpdatePassword } from 'src/common/guard/jwt-update-password.guard';
 @ApiTags('Auth')
@@ -54,13 +53,13 @@ export class AuthController {
 
   // token must
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @Get('profile')
   profile(@UserID() id: string) {
     return this.authService.profile(id);
   }
 
   @ApiBearerAuth()
+  @Public()
   @UseGuards(AuthUpdatePassword)
   @Patch('update-password')
   updatePassword(@Body() data: UpdatePasswordDto, @Req() res: Request) {

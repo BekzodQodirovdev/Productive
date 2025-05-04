@@ -10,7 +10,7 @@ export class Expense extends BaseModel {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @Column({ type: 'uuid' })
