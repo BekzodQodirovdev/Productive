@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { config } from '../../config/index';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
+import { VerifyType } from '../type/otp.type';
 
 @Injectable()
 export class AuthUpdatePassword implements CanActivate {
@@ -44,7 +45,7 @@ export class AuthUpdatePassword implements CanActivate {
       });
 
       req.user = user;
-      if (user.type !== 'forgot_password') {
+      if (user.type !== VerifyType.UPDATE_PASSWORD) {
         throw new UnauthorizedException('Unauthorized');
       }
     } catch (error) {

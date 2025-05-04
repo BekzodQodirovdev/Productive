@@ -13,6 +13,8 @@ export type ConfigType = {
   REFRESH_TOKEN_KEY: string;
   REFRESH_TOKEN_TIME: string;
   JWT_SECRET: string;
+  REDIS_HOST: string;
+  REDIS_PORT: string;
 };
 
 export const config: ConfigType = {
@@ -27,4 +29,6 @@ export const config: ConfigType = {
   REFRESH_TOKEN_KEY: process.env.REFRESH_TOKEN_KEY as string,
   REFRESH_TOKEN_TIME: process.env.REFRESH_TOKEN_TIME as string,
   JWT_SECRET: process.env.JWT_SECRET as string,
+  REDIS_HOST: process.env.REDIS_HOST as string,
+  REDIS_PORT: process.env.REDIS_PORT as string,
 };
