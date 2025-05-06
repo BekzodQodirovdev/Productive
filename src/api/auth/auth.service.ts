@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
   Inject,
   Injectable,
   NotFoundException,
@@ -24,6 +25,7 @@ import { setdOtpDdto } from './dto/sendotp.dto';
 import { UpdatePasswordDto } from './dto/update-password';
 import { VerifyType } from 'src/common/type/otp.type';
 import Redis from 'ioredis';
+import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -211,7 +213,19 @@ export class AuthService {
   }
 
   profile(id: string) {
-    return this.repository.findOne({ where: { id } });
+    return this.repository.findOne({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        picture: true,
+        created_at: true,
+        updated_at: true,
+        network: true,
+        is_active: true,
+      },
+    });
   }
 
   async updatePassword(dto: UpdatePasswordDto, req: Request) {
@@ -226,11 +240,36 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     const newPassword = await this.manageBcrypt.createBcryptPassword(password);
-    await this.repository.update(user.id, { password: newPassword });
+    await this.repository.update(user.id, {
+      password: newPassword,
+      updated_at: new Date(Date.now()),
+    });
     await this.redis.set(`otp:token_${getToken}`, getToken as string);
     return {
       status_code: 200,
       message: 'Success',
+      data: {},
+    };
+  }
+
+  async updateUser(id: string, data: UpdateAuthDto) {
+    const userData = await this.repository.findOne({ where: { id } });
+    if (!userData) {
+      throw new HttpException('not found', 404);
+    }
+    if (userData?.password) {
+      const newPassword = await this.manageBcrypt.createBcryptPassword(
+        userData.password,
+      );
+      userData.password = newPassword;
+    }
+    await this.repository.update(id, {
+      ...userData,
+      updated_at: new Date(Date.now()),
+    });
+    return {
+      status_code: 200,
+      message: 'success',
       data: {},
     };
   }

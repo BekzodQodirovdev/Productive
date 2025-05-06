@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateEventDto {
   @ApiProperty({
@@ -38,11 +43,6 @@ export class CreateEventDto {
   @IsNotEmpty()
   end_date: Date;
 
-  @ApiProperty({
-    description: 'User ID who created the event',
-    example: '3bcd3f10-88ee-45c1-ae29-23b5df8a57d4',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  user_id: string;
+  @IsOptional()
+  user_id?: string;
 }

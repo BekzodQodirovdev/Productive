@@ -23,10 +23,10 @@ export class Task extends BaseModel {
   @Column({ type: 'enum', enum: TaskStatus })
   status: TaskStatus;
 
-  @Column({ type: 'text', array: true })
+  @Column({ type: 'text', array: true, nullable: true })
   location: string[];
 
-  @Column()
+  @Column({ default: true })
   notification: boolean;
 
   @Column({ type: 'uuid' })

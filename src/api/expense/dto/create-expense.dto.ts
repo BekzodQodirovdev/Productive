@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateExpenseDto {
   @ApiProperty({
@@ -27,11 +27,6 @@ export class CreateExpenseDto {
   @IsNotEmpty()
   price: number;
 
-  @ApiProperty({
-    description: 'ID of the user who recorded the expense',
-    example: 'a1b2c3d4-e5f6-7890-1234-56789abcdef0',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  user_id: string;
+  @IsOptional()
+  user_id?: string;
 }

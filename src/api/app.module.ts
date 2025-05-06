@@ -11,6 +11,7 @@ import { IncomeModule } from './income/income.module';
 import { JwtGuard } from 'src/common/guard/jwt-auth.guard';
 import { EventModule } from './event/event.module';
 import { ExpenseModule } from './expense/expense.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { ExpenseModule } from './expense/expense.module';
       database: config.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      // dropSchema: true,
+      dropSchema: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
     }),
     MailerModule.forRoot({
@@ -52,6 +53,7 @@ import { ExpenseModule } from './expense/expense.module';
     IncomeModule,
     EventModule,
     ExpenseModule,
+    TasksModule,
   ],
   controllers: [],
   providers: [

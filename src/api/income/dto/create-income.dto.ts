@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDecimal, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsDecimal, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateIncomeDto {
   @ApiProperty({
@@ -21,14 +21,6 @@ export class CreateIncomeDto {
   @IsNotEmpty()
   description: string;
 
-  @ApiProperty({
-    description:
-      'The unique identifier of the user associated with this income.',
-    example: 'fbc8b10c-8b95-45bc-a100-33a29b9cf45f',
-    type: 'string',
-    format: 'uuid',
-  })
-  @IsUUID()
-  @IsNotEmpty()
-  user_id: string;
+  @IsOptional()
+  user_id?: string;
 }

@@ -20,8 +20,8 @@ export class IncomeController {
   constructor(private readonly incomeService: IncomeService) {}
 
   @Post()
-  create(@Body() createIncomeDto: CreateIncomeDto) {
-    return this.incomeService.create(createIncomeDto);
+  create(@UserID() id: string, @Body() createIncomeDto: CreateIncomeDto) {
+    return this.incomeService.create({ ...createIncomeDto, user_id: id });
   }
 
   @Get()

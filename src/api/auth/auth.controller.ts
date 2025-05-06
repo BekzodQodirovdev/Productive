@@ -19,6 +19,7 @@ import { Public } from 'src/common/decorator/public.decorator';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdatePasswordDto } from './dto/update-password';
 import { AuthUpdatePassword } from 'src/common/guard/jwt-update-password.guard';
+import { UpdateAuthDto } from './dto/update-auth.dto';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -61,8 +62,14 @@ export class AuthController {
   @ApiBearerAuth()
   @Public()
   @UseGuards(AuthUpdatePassword)
-  @Patch('update-password')
+  @Patch('forgot-password')
   updatePassword(@Body() data: UpdatePasswordDto, @Req() res: Request) {
     return this.authService.updatePassword(data, res);
+  }
+
+  @ApiBearerAuth()
+  @Patch('user')
+  updateUser(@UserID() id: string, @Body() data: UpdateAuthDto) {
+    return this.authService.updateUser(id, data);
   }
 }

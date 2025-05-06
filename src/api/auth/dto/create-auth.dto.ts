@@ -34,7 +34,6 @@ export class CreateAuthDto {
     description: 'Foydalanuvchi rasmi (ixtiyoriy)',
   })
   @IsOptional()
-  @IsString()
   picture?: string;
 
   @ApiPropertyOptional({

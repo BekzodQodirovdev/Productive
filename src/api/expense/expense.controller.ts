@@ -20,8 +20,8 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
-  create(@Body() createExpenseDto: CreateExpenseDto) {
-    return this.expenseService.create(createExpenseDto);
+  create(@UserID() id: string, @Body() createExpenseDto: CreateExpenseDto) {
+    return this.expenseService.create({ ...createExpenseDto, user_id: id });
   }
 
   @Get()
