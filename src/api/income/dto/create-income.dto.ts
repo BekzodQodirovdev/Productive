@@ -8,7 +8,6 @@ export class CreateIncomeDto {
     type: 'number',
     format: 'decimal',
   })
-  @IsDecimal()
   @IsNotEmpty()
   price: number;
 

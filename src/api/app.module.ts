@@ -31,7 +31,7 @@ import { TasksModule } from './tasks/tasks.module';
       database: config.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      dropSchema: true,
+      // dropSchema: true,
       entities: ['dist/core/entity/*.entity{.ts,.js}'],
     }),
     MailerModule.forRoot({
