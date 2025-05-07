@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { UserID } from 'src/common/decorator/user-id.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { FilterTasksDto } from './dto/filter-tasks.dto';
 
 @ApiBearerAuth()
 @Controller('tasks')
@@ -24,8 +26,8 @@ export class TasksController {
   }
 
   @Get()
-  findAll(@UserID() id: string) {
-    return this.tasksService.findAll({ where: { user_id: id } });
+  findAll(@UserID() id: string, @Query() filterDto: FilterTasksDto) {
+    return this.tasksService.findAllCustom(id, filterDto);
   }
 
   @Get(':id')
